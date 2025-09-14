@@ -44,13 +44,13 @@ export const buildIntentInstruction = async () => {
 
   console.log("dataBuild: ", dataBuild);
 
-  // Call backend endpoint instead of Biconomy API directly to avoid CORS
   const { data } = await axios.post(
-    "http://localhost:4001/compose",
+    "https://api.biconomy.io/v1/instructions/compose",
     { ...dataBuild },
     {
       headers: {
         "Content-Type": "application/json",
+        "X-API-Key": process.env.BICONOMY_API_KEY,
       },
     },
   );
@@ -140,9 +140,8 @@ export const testGetQuote = async () => {
   console.log(data);
 };
 
-export const testPrepare = async (auth, intruct) => {
+export const testPrepare = async (intruct) => {
   const { data } = await axios.post("http://localhost:4001/", {
-    authorization: auth,
     instructions: intruct,
   });
 
@@ -162,5 +161,17 @@ export const testBuild = async (args) => {
   const { data } = await axios.post("http://localhost:4001/build", {
     args,
   });
+  return data;
+};
+
+export const testExecute = async (dataBody) => {
+  const { data } = await axios.post("http://localhost:4001/execute", {
+    data: dataBody,
+  });
+  return data.supertxHash;
+};
+
+export const prepareAndBuild = async () => {
+  const { data } = await axios.post("http://localhost:4001/prepareAndBuild");
   return data;
 };
